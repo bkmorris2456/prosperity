@@ -1,7 +1,30 @@
 import "../css/signup.css";
-import {Box, Grid2, Item, Typography, TextField, Button} from "@mui/material"
+import {Box, Grid2, Item, Typography, TextField, Button} from "@mui/material";
+import {React, useState} from 'react';
+import axios from 'axios';
+import {Link, useNavigate} from 'react-router-dom'
 
 export default function Signup() {
+
+    const [values, setValues] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirm_pw: '',
+    })
+
+    const navigate = useNavigate()
+
+    function handleSubmit(e){
+        e.preventDefault()
+
+        axios.post('/create_account', values)
+        .then((res)=>{
+            navigate('/login')
+            console.log(res)
+        })
+        .catch((err)=>console.log(err))
+    }
 
     return (
 
@@ -46,28 +69,28 @@ export default function Signup() {
                     <Grid2 size={12}>
                         <TextField label="Name" variant="standard" sx={{
                             width: "80%"
-                        }}/>
+                        }} onChange={(e)=> setValues({...values, name: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
                         <TextField label="Email" variant="standard" sx={{
                             width: "80%"
-                        }}/>
+                        }} onChange={(e)=> setValues({...values, email: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
                         <TextField label="Password" variant="standard" sx={{
                                 width: "80%"
-                            }}/>
+                            }} onChange={(e)=> setValues({...values, password: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
                         <TextField label="Confirm Password" variant="standard" sx={{
                                 width: "80%"
-                            }}/>
+                            }} onChange={(e)=> setValues({...values, confirm_pw: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
                         <Button variant="contained" sx={{
                             width: "80%",
                             backgroundColor: "#282d1c",
-                        }}>Sign Up!</Button>
+                        }} onClick={handleSubmit}>Sign Up!</Button>
                     </Grid2>
                 </Grid2>
             </Box>
