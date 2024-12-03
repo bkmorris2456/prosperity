@@ -21,8 +21,13 @@ export default function Login() {
 
         axios.post('/check_account', values)
         .then((res)=>{
-            navigate('/home')
-            console.log(res)
+            if (res.data.status === 'success') {
+                console.log(res.data.message);
+                navigate('/home');
+            } else {
+                console.log(res.data.message);
+                alert(res.data.message);
+            }
         })
         .catch((err)=>console.log(err))
     }
