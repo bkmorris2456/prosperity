@@ -19,34 +19,49 @@ const db = mysql.createConnection({
     database: "prosperity",
 })
 
-app.post('/create_account', (req, res)=>{
+app.post('/create_account', async (req, res)=>{
 
-    sql = "INSERT INTO users (`name`, `email`, `password`) VALUES (?, ?, ?)";
-    const values = [
-        req.body.name,
-        req.body.email,
-        req.body.password
-    ]
+    const { name, email, password, confirm_pw } = req.body;
 
-    if (req.body.password == req.body.confirm_pw) {
-        db.query(sql, values, (err, result)=>{
-            if(err) {
-                console.error("Database Error", err)
-                return res.json({message: 'Database error occurred. Check logs.'})
-            }
-
-            return res.json({success: "Account created successfully!"})
-        })
-    } else {
-        return res.json({message: 'Passwords do not match! Try again.'})
+    if (password !== confirm_pw) {
+        return res.status(400).json({ message: 'Passwords do not match! Try again.' });
     }
-})
+
+    // Check password requirements
+    const passwordRegex = /^(?=.*\d.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            message: 'Password must be at least 12 characters long, include at least 2 numbers, and use special characters.'
+        });
+    }
+
+    try {
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const sql = 'INSERT INTO users (`name`, `email`, `password`) VALUES (?, ?, ?)';
+        const values = [name, email, hashedPassword];
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error('Database Error:', err);
+                return res.status(500).json({message: 'Database error occurred. Check logs.'});
+            }
+            res.status(201).json({ success: 'Account created successfully!' });
+        });
+
+    } catch (error) {
+        console.error('Error during account creation:', error);
+        res.status(500).json({ message: 'An error occurred during account creation.' });
+    }
+});
 
 app.post('/check_account', (req, res)=>{
 
     const {email, password} = req.body;
+    console.log(req.body)
 
-    const sql = 'SELECT email, password FROM users WHERE email = ?';
+    const sql = 'SELECT password FROM users WHERE email = ?';
 
     db.query(sql, [email], async (err, result)=>{
 
@@ -66,9 +81,9 @@ app.post('/check_account', (req, res)=>{
         console.log('Hashed Password: ', hashedPassword);
 
         try {
-            // const isMatch = await bcrypt.compare(password, hashedPassword);
+            const isMatch = await bcrypt.compare(password, hashedPassword);
 
-            if (password === hashedPassword) {
+            if (isMatch) {
                 console.log('Login successful!');
                 return res.json({status: 'success', message: 'login successful, redirecting to homepage.'});
             } else {
@@ -79,16 +94,6 @@ app.post('/check_account', (req, res)=>{
             console.error('Error comparing passwords:', error);
             return res.status(500).json({ status: 'error', message: 'An error occurred during login'});
         }
-
-        // if (password === req.body.password) {
-        //     console.log('Login successful!');
-        //     return { status: 'success', message: 'Successful, redirect to Homepage'};
-        // } else {
-        //     console.log('Invalid Password');
-        //     return {status: 'fail', message: 'Invalid email or password'};
-        // }
-
-        // return res.json({message: 'Account has been found'})
     });
 
 });

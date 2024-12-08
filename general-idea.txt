@@ -1,0 +1,19 @@
+Notes, 12/5/2024:
+Page Feature Ideas:
+
+- Exercise
+    - Ability to create custom workout routines and workout splits
+    - Ability to load up or save workout routines, and also actively check off workouts on the routine
+    - calculator to determine a rough estimate of calories burned from completed workout routines
+    - Ability to set workout goals and view progress toward said goals
+    - Interactive calendar display showing off # days user went to the gym or exercised
+    - Ability to set what days have which routines, if desired
+- Nutrition
+    - Able to add foods, meals, drinks, etc. to your daily consumption
+    - View macros, calories, and other nutritional information from the day's meals
+    - Calculate nutritional goals based on user's choice (weight loss, weight gain, etc.)
+
+- Profile
+    - View general profile information, also have ability to change it
+    - Ability to set user profile image using any form of viable image media
+    - Ability to access goals for both exercise and nutrition, and be able to change and set them accordingly

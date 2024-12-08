@@ -13,18 +13,27 @@ export default function Signup() {
         confirm_pw: '',
     })
 
-    const navigate = useNavigate()
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
 
-    function handleSubmit(e){
-        e.preventDefault()
-
-        axios.post('/create_account', values)
-        .then((res)=>{
-            navigate('/login')
-            console.log(res)
-        })
-        .catch((err)=>console.log(err))
-    }
+    function handleSubmit(e) {
+        e.preventDefault();
+        console.log(values)
+    
+        axios.post("/create_account", values)
+          .then((res) => {
+            navigate("/login");
+            console.log(res);
+          })
+          .catch((err) => {
+            if (err.response && err.response.data.message) {
+              setErrorMessage(err.response.data.message); // Set the error message from the server
+            } else {
+              console.error(err);
+              setErrorMessage("An unexpected error occurred. Please try again.");
+            }
+          });
+      }
 
     return (
 
@@ -77,12 +86,12 @@ export default function Signup() {
                         }} onChange={(e)=> setValues({...values, email: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
-                        <TextField label="Password" variant="standard" sx={{
+                        <TextField label="Password" variant="standard" type='password' sx={{
                                 width: "80%"
                             }} onChange={(e)=> setValues({...values, password: e.target.value})}/>
                     </Grid2>
                     <Grid2 size={12}>
-                        <TextField label="Confirm Password" variant="standard" sx={{
+                        <TextField label="Confirm Password" variant="standard" type='password' sx={{
                                 width: "80%"
                             }} onChange={(e)=> setValues({...values, confirm_pw: e.target.value})}/>
                     </Grid2>
